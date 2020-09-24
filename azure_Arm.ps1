@@ -1,5 +1,5 @@
-﻿$Admin = "Promo2022.d2p1g5@diiage.org"
-$Password = "DFCO#2020"
+$Admin = "Promo2022.d2p1g5@diiage.org"
+$Password = Read-Host "Mot de passe" -AsSecureString
 
 #Identifiants avec concaténation Nom d'user + Password
 $SecPass = ConvertTo-SecureString $Password -AsPlainText -Force
