@@ -3,86 +3,86 @@
 
 function CheckUser{
 
-#Vérifie si l'utilisateur est déjà créer
+    #Vérifie si l'utilisateur est déjà créer
 
-param([string]$mail)
+    param([string]$mail)
 
-process{
+    process{
 
-Get-AzADUser -UserPrincipalName $mail
+    Get-AzADUser -UserPrincipalName $mail
 
-}
+    }
 }
 
 function CreateUser {
 
-#Création d'un utilisateur AzAD
+    #Création d'un utilisateur AzAD
 
 
-param([string]$nom,[string]$prenom,[String]$mdp)
+    param([string]$nom,[string]$prenom,[String]$mdp)
 
-process {
+    process {
 
-$PasswordProfile = New-Object -TypeName Microsoft.Open.AzureAD.Model.PasswordProfile
+    $PasswordProfile = New-Object -TypeName Microsoft.Open.AzureAD.Model.PasswordProfile
 
-$PasswordProfile.Password = $mdp
+    $PasswordProfile.Password = $mdp
 
-$mail = ($prenom + "." + $nom + "@rezorezo7.onmicrosoft.com").ToLower()
-$displayName = $nom + $prenom
-New-AzureADUser -DisplayName $displayName -PasswordProfile $PasswordProfile.Password -UserPrincipalName $mail -AccountEnabled $true -MailNickName $displayName
-
-
-ADD-content -path $fichier -value ($mail + "`t" + $PasswordProfile.Password)
+    $mail = ($prenom + "." + $nom + "@rezorezo7.onmicrosoft.com").ToLower()
+    $displayName = $nom + $prenom
+    New-AzureADUser -DisplayName $displayName -PasswordProfile $PasswordProfile.Password -UserPrincipalName $mail -AccountEnabled $true -MailNickName $displayName
 
 
-}
+    ADD-content -path $fichier -value ($mail + "`t" + $PasswordProfile.Password)
+
+
+    }
 }
 
 function DeleteUser{
 
-#Suppression d'un utilisateur
+    #Suppression d'un utilisateur
 
-param([string]$objectid)
-process{
-Get-AzureADUser -ObjectId $objectid | select UserPrincipalName,DisplayName
-$choix = Read-Host "Voulez vous supprimer cet utilisateur ? O/N"
-if (-not(($choix -ne "o") -or  ($choix -ne "O"))){
-    Remove-AzureADUser -ObjectId $objectid
-    Write-Host "`nUtilisateur supprimé.`n"
-}
-}
+    param([string]$objectid)
+    process{
+        Get-AzureADUser -ObjectId $objectid | select UserPrincipalName,DisplayName
+        $choix = Read-Host "Voulez vous supprimer cet utilisateur ? O/N"
+        if (-not(($choix -ne "o") -or  ($choix -ne "O"))){
+            Remove-AzureADUser -ObjectId $objectid
+            Write-Host "`nUtilisateur supprimé.`n"
+        }
+    }
 }
 
 
 function ChangeUserPassword{
 
-#Changement mdp utilisateur
+    #Changement mdp utilisateur
 
-param([string]$objectid)
-process{
-Get-AzureADUser -ObjectId $objectid | select UserPrincipalName,DisplayName
-$choix = Read-Host "S'agit il de cet utilisateur ? O/N"
-if (-not(($choix -ne "o") -or  ($choix -ne "O"))){
-    $newpass = Read-Host "Saisissez le nouveau mot de passe" -AsSecureString
-    Set-AzureADUserPassword -ObjectId $objectid -Password $newpass
-    Write-Host "`nMot de passe mis à jour.`n"
-}
-}
+    param([string]$objectid)
+    process{
+        Get-AzureADUser -ObjectId $objectid | select UserPrincipalName,DisplayName
+        $choix = Read-Host "S'agit il de cet utilisateur ? O/N"
+        if (-not(($choix -ne "o") -or  ($choix -ne "O"))){
+            $newpass = Read-Host "Saisissez le nouveau mot de passe" -AsSecureString
+            Set-AzureADUserPassword -ObjectId $objectid -Password $newpass
+            Write-Host "`nMot de passe mis à jour.`n"
+        }
+    }
 }
 
 $tenant = "32b7737e-995c-4199-a1b9-35e028b81f7d" #locataire azure rezorezo7
 $subscription = "6c6f03b8-8d2b-46ed-a2ec-57c9117854c8"
 #si pb de connexion affiche un message
 function connectazad {
-try{
-    Connect-AzureAD -TenantId $tenant -ErrorAction Stop
+    try{
+        Connect-AzureAD -TenantId $tenant -ErrorAction Stop
 
-}catch{
-    cls
-    write-host "Erreur lié à la connexion à Azure"
-    pause
-    connectazad
-    }
+    }catch{
+        cls
+        write-host "Erreur lié à la connexion à Azure"
+        pause
+        connectazad
+        }
 }
 
 #Emplacement utilisateurs à importer
