@@ -6,11 +6,15 @@ $SecPass = ConvertTo-SecureString $Password -AsPlainText -Force
 $Credentials = New-Object System.Management.Automation.PSCredential ($Admin, $SecPass)
 
 #Connexion
-try{
-    Connect-AzAccount -Credential $Credentials
-}catch{
-    write-host "$_.Exception.Message"
+function connect{
+    try{
+        Connect-AzAccount -Credential $Credentials -ErrorAction Stop
+    }catch{
+        write-host "$_.Exception.Message"
+        connect
+    }
 }
+connect
 
 $resourceGroupName = Read-Host -Prompt "Saisissez le nom du groupe de ressource à créer"
 $location = Read-Host -Prompt "Entrer une localisation" #verifier localisation ou try catch
@@ -35,4 +39,5 @@ Catch {
         
     }
 
+#Création ressource
 New-AzResourceGroupDeployment -ResourceGroupName $resourceGroupName -TemplateUri $Template
