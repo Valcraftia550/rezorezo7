@@ -22,49 +22,49 @@ New-Item -Path $fichier -ItemType File
 
 function CheckUser{
 
-#Vérifie si l'utilisateur est déjà créer
+    #Vérifie si l'utilisateur est déjà créer
 
-param([string]$login)
+    param([string]$login)
 
-process{
+    process{
 
-    Get-ADUser -Filter 'SamAccountName -eq $login' -SearchBase $OU
+        Get-ADUser -Filter 'SamAccountName -eq $login' -SearchBase $OU
 
-}
+    }
 }
 
 function CreateUser {
 
-#Création d'un utilisateur AD
+    #Création d'un utilisateur AD
 
 
-param([string]$nom,[string]$prenom)
+    param([string]$nom,[string]$prenom)
 
-process {
+    process {
 
-    $login = $nom + "." + $prenom
-    $mdp = ConvertTo-SecureString "Azerty@123" -AsPlainText -Force
+        $login = $nom + "." + $prenom
+        $mdp = ConvertTo-SecureString "Azerty@123" -AsPlainText -Force
 
-    #Création mdp random et insertion dans le fichier
-    $randomPassword = [System.Web.Security.Membership]::GeneratePassword(8,1)
-    ADD-content -path $fichier -value ($login + "`t" + $randomPassword)
+        #Création mdp random et insertion dans le fichier
+        $randomPassword = [System.Web.Security.Membership]::GeneratePassword(8,1)
+        ADD-content -path $fichier -value ($login + "`t" + $randomPassword)
 
-    try{
-        New-ADUser -Name ($nom +" " + $prenom) -GivenName $prenom -SamAccountName $login -Path $OU -AccountPassword $mdp -Enabled $true -ErrorAction Stop
-    }catch{
-        Write-Host "L'utilisateur $login existe déjà."
+        try{
+            New-ADUser -Name ($nom +" " + $prenom) -GivenName $prenom -SamAccountName $login -Path $OU -AccountPassword $mdp -Enabled $true -ErrorAction Stop
+        }catch{
+            Write-Host "L'utilisateur $login existe déjà."
+        }
     }
-}
 }
 
 function DeleteUser{
 
-#Suppression d'un utilisateur
+    #Suppression d'un utilisateur
 
-param([string]$login)
-process{
-    Remove-ADUser $login -Confirm:$False
-}
+    param([string]$login)
+    process{
+        Remove-ADUser $login -Confirm:$False
+    }
 }
 
 
